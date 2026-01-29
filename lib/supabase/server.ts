@@ -3,7 +3,7 @@ import { cookies } from "next/headers"
 import { requireEnv } from "@/lib/supabase/env"
 
 export async function createClient() {
-  const cookieStore = await cookies()
+  const cookieStore = await cookies();
 
   return createServerClient(requireEnv("NEXT_PUBLIC_SUPABASE_URL"), requireEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY"), {
     cookies: {
