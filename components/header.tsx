@@ -10,11 +10,11 @@ export function Header() {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <header className="fixed w-full top-0 z-50 blur-gradient border-b border-border/50">
+    <header className="fixed w-full top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50 supports-backdrop-filter:bg-background/60">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-linear-to-br from-primary to-accent flex items-center justify-center">
             <span className="text-primary-foreground font-bold text-sm">
               ⚫
             </span>
@@ -92,7 +92,7 @@ export function Header() {
                 <ThemeToggle />
               </div>
               {/* Connect Wallet button  */}
-              <div className="w-full cursor-pointer px-4 py-2 text-sm rounded-lg bg-gradient-to-r from-primary to-accent text-primary-foreground font-semibold">
+              <div className="w-full cursor-pointer px-4 py-2 text-sm rounded-lg bg-linear-to-r from-primary to-accent text-primary-foreground font-semibold">
                 <ConnectWallet />
               </div>
             </div>
