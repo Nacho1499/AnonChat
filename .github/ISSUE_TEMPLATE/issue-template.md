@@ -36,3 +36,10 @@ Make sure your changes don't break existing functionality and commit with a clea
 ```bash
 git commit -m "Fix: [Short description of the fix]"
 ```
+
+## Required 📋
+### Guidelines:
+- **Assignment**: Don't create a pull request if you weren’t assigned to this issue.
+- **Timeframe**: Complete the task within 3 business days.
+
+**PR description must include:** `Close #[issue_id]`
