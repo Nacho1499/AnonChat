@@ -9,18 +9,22 @@ export default function ConnectWallet() {
   const [loading, setLoading] = useState(true);
 
   async function showConnected() {
-    const key = await getPublicKey();
-    if (key) {
-      setPublicKey(key);
-
-      {/* Wallet connection toast */ }
-      toast.success("Wallet connected successfully", {
-        duration: 2000
-      });
-    } else {
+    try {
+      const key = await getPublicKey();
+      if (key) {
+        setPublicKey(key);
+        toast.success("Wallet connected successfully", {
+          duration: 2000
+        });
+      } else {
+        setPublicKey(null);
+      }
+    } catch (error) {
+      console.error("Connection error:", error);
       setPublicKey(null);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   async function showDisconnected() {
@@ -35,11 +39,16 @@ export default function ConnectWallet() {
 
   useEffect(() => {
     (async () => {
-      const key = await getPublicKey();
-      if (key) {
-        setPublicKey(key);
+      try {
+        const key = await getPublicKey();
+        if (key) {
+          setPublicKey(key);
+        }
+      } catch (error) {
+        console.error("Initial wallet check failed:", error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     })();
   }, []);
 
