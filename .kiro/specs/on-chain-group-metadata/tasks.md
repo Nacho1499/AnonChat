@@ -65,7 +65,7 @@
     - _Requirements: 2.1, 2.4, 4.5_
 
 - [ ] 4. Update database schema
-  - [ ] 4.1 Create database migration script
+  - [x] 4.1 Create database migration script
     - Create scripts/003_add_blockchain_fields.sql
     - Add stellar_tx_hash column (TEXT NULL)
     - Add metadata_hash column (TEXT NULL)
@@ -73,7 +73,7 @@
     - Create index on stellar_tx_hash
     - _Requirements: 1.5_
   
-  - [ ] 4.2 Apply migration to Supabase
+  - [x] 4.2 Apply migration to Supabase
     - Document migration steps in implementation notes
     - _Requirements: 1.5_
 
