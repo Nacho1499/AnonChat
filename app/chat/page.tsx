@@ -290,7 +290,7 @@ export default function ChatPage() {
                         <button
                           onClick={() => setSelectedChatId(chat.id)}
                           className={cn(
-                              "w-full px-3.5 py-2.5 flex gap-3 items-center text-left hover:bg-muted/10 transition",
+                              "w-full px-3.5 py-2.5 flex gap-3 items-center text-left hover:bg-muted/10 transition cursor-pointer",
                               isSelected &&
                                 "bg-primary/5 border-l-2 border-primary/80 shadow-[0_0_0_1px_rgba(168,85,247,0.08)]",
                             )}
@@ -359,7 +359,7 @@ export default function ChatPage() {
                     end‑to‑end encrypted.
                   </p>
                 </div>
-                <button className="mt-2 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium bg-background hover:bg-muted/60 transition">
+                <button className="mt-2 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium bg-background hover:bg-muted/60 transition cursor-pointer">
                   <MessageCircle className="h-4 w-4" />
                   Create or join a room
                 </button>
@@ -393,7 +393,7 @@ export default function ChatPage() {
 
                   <div className="hidden sm:flex items-center gap-3 text-muted-foreground">
                     {walletConnected && (
-                      <div className="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full bg-[#181822] border border-border/60">
+                      <div className="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full bg-primary/10 border border-border/60">
                         <Wallet className="h-3.5 w-3.5 text-primary" />
                         <span>Wallet linked</span>
                       </div>
