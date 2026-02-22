@@ -29,13 +29,13 @@
     - _Requirements: 1.1_
 
 - [ ] 3. Create Stellar Service
-  - [ ] 3.1 Implement Stellar configuration loader
+  - [x] 3.1 Implement Stellar configuration loader
     - Create lib/blockchain/stellar-config.ts
     - Read environment variables (STELLAR_NETWORK, STELLAR_SOURCE_SECRET, STELLAR_HORIZON_URL)
     - Implement isConfigured validation function
     - _Requirements: 4.1, 4.2, 4.3, 4.4_
   
-  - [ ] 3.2 Implement transaction submission function
+  - [x] 3.2 Implement transaction submission function
     - Create lib/blockchain/stellar-service.ts
     - Implement submitMetadataHash function
     - Build transaction with memo field containing hash
@@ -48,7 +48,7 @@
     - **Property 2: Transaction structure correctness**
     - **Validates: Requirements 1.2, 1.3**
   
-  - [ ] 3.4 Implement transaction retrieval function
+  - [x] 3.4 Implement transaction retrieval function
     - Add getTransaction function to fetch transaction by hash
     - Parse memo field from transaction
     - _Requirements: 3.1, 3.2_
