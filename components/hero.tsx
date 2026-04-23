@@ -15,7 +15,7 @@ export function Hero() {
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {/* Eyebrow Text */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border/50 mb-8">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border dark:border-muted border-border/50 mb-8">
           <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
           <span className="text-sm text-muted-foreground">
             The Future of Private Communication
@@ -53,7 +53,7 @@ export function Hero() {
           <button className="px-8 py-4 bg-gradient-to-r from-primary to-accent text-primary-foreground font-bold rounded-lg hover:shadow-lg hover:shadow-primary/50 transition-all duration-300 hover:scale-105">
             Start Chatting Now
           </button>
-          <button className="px-8 py-4 border border-border/50 rounded-lg hover:bg-card/50 transition-all duration-300 font-semibold">
+          <button className="px-8 py-4 border dark:border-muted border-border/50 rounded-lg hover:bg-card/50 transition-all duration-300 font-semibold">
             Learn More
           </button>
         </div>
