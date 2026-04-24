@@ -55,13 +55,15 @@ export function Hero() {
             <button className="px-8 py-4 bg-gradient-to-r from-primary to-accent text-primary-foreground font-bold rounded-lg hover:shadow-lg hover:shadow-primary/50 transition-all duration-300 hover:scale-105 cursor-pointer">
             Start Chatting Now
           </button>
-          <button className="px-8 py-4 border border-border/50 rounded-lg hover:bg-card/50 transition-all duration-300 font-semibold">
+          </Link>
+        
+          <button className="px-8 py-4 border dark:border-muted border-border/50 rounded-lg hover:bg-card/50 transition-all duration-300 font-semibold cursor-pointer">
             Learn More
           </button>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 pt-16 border-t border-border/50">
+        <div className="grid grid-cols-3 gap-4 pt-16 border-t dark:border-muted border-border/50">
           <div className="text-center">
             <p className="text-3xl font-bold gradient-text">0</p>
             <p className="text-sm text-muted-foreground mt-2">Data Collected</p>

@@ -1,13 +1,15 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-import { Menu, X } from "lucide-react";
-import { useState } from "react";
-import ConnectWallet from "./wallet-connector";
-import { ThemeToggle } from "./theme-toggle";
+import Link from "next/link"
+import { Menu, X } from "lucide-react"
+import { useState } from "react"
+import ConnectWallet from "./wallet-connector"
+import { ThemeToggle } from "./theme-toggle"
+import { CreateGroupModal } from "./create-group-modal"
+import { JoinGroupModal } from "./join-group-modal"
 
 export function Header() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false)
 
   return (
     <header className="fixed w-full top-0 z-50 bg-background/80 backdrop-blur-md border-b dark:border-muted border-border/50 supports-backdrop-filter:bg-background/60">
@@ -50,7 +52,9 @@ export function Header() {
           <CreateGroupModal />
           <JoinGroupModal />
           {/* Connect Wallet button  */}
-          <div className="w-full cursor-pointer px-4 py-2 text-sm rounded-lg  text-primary-foreground font-semibold">
+          <div
+            className="cursor-pointer px-4 py-2 text-sm rounded-lg  text-primary-foreground font-semibold"
+          >
             <ConnectWallet />
           </div>
         </div>
@@ -89,9 +93,7 @@ export function Header() {
 
             <div className="pt-3 border-t border-border/50 space-y-2">
               <div className="flex items-center justify-between px-2">
-                <span className="text-sm text-muted-foreground font-medium">
-                  Theme
-                </span>
+                <span className="text-sm text-muted-foreground font-medium">Theme</span>
                 <ThemeToggle />
               </div>
               <div className="flex flex-col gap-2">
