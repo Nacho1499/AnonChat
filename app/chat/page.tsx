@@ -347,12 +347,18 @@ export default function ChatPage() {
 
   const handleComposerKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      // Handle Enter key for sending message (only when not combined with Shift)
       if (event.key === "Enter" && !event.shiftKey) {
         event.preventDefault();
-        void handleSendMessage();
+        // Only send if there's actual content to send
+        if (inputMessage.trim()) {
+          void handleSendMessage();
+        }
       }
+      // Allow Shift+Enter to create new lines (default behavior)
+      // Also allow other keyboard shortcuts like Ctrl+C, Ctrl+V, etc.
     },
-    [handleSendMessage],
+    [handleSendMessage, inputMessage],
   );
 
   const filteredChats = useMemo(() => {
@@ -596,7 +602,7 @@ export default function ChatPage() {
                         onChange={(event) => setInputMessage(event.target.value)}
                         onKeyDown={handleComposerKeyDown}
                         rows={1}
-                        placeholder="Type a message"
+                        placeholder="Type a message (Enter to send, Shift+Enter for new line)"
                         className="flex-1 min-h-10 max-h-32 resize-none rounded-2xl border border-border/80 bg-background px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/30"
                       />
 
