@@ -168,6 +168,8 @@ export class WebSocketClient {
     this.send({
       type: "wallet_event",
       payload: { action, walletAddress },
+      type: "join_room",
+      payload: { roomId },
       timestamp: Date.now(),
     });
   }
@@ -211,6 +213,19 @@ export class WebSocketClient {
       timestamp: Date.now(),
     });
   leaveRoom = (roomId: string) =>
+    })
+    return { success: true }
+  }
+
+  markAsDelivered(messageId: string, roomId: string) {
+    this.send({
+      type: "message_delivered",
+      payload: { messageId, roomId },
+      timestamp: Date.now(),
+    })
+  }
+
+  notifyTyping(roomId: string) {
     this.send({
       type: "leave_room",
       payload: { roomId },
