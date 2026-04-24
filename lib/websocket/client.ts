@@ -8,8 +8,8 @@ import { rateLimiter } from "@/lib/rate-limiter";
 import { handleAppError } from "@/lib/error-handler";
 
 const RECONNECT_ATTEMPTS = 5;
-const INITIAL_RECONNECT_DELAY = 1000; // 1 second
-const MAX_RECONNECT_DELAY = 30000; // 30 seconds
+const INITIAL_RECONNECT_DELAY = 1000;
+const MAX_RECONNECT_DELAY = 30000;
 
 export class WebSocketClient {
   private ws: WebSocket | null = null;
@@ -35,7 +35,6 @@ export class WebSocketClient {
   connect(): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        // Prevent multiple simultaneous connection attempts
         if (
           this.connectionState === "connecting" ||
           this.connectionState === "connected"
@@ -47,7 +46,6 @@ export class WebSocketClient {
         this.ws = new WebSocket(this.url);
 
         this.ws.onopen = () => {
-          console.log("[WebSocket Client] Connected");
           this.reconnectAttempts = 0;
           this.reconnectDelay = INITIAL_RECONNECT_DELAY;
           this.setConnectionState("connected");
@@ -57,29 +55,17 @@ export class WebSocketClient {
         this.ws.onmessage = (event) => {
           try {
             const message = JSON.parse(event.data) as WebSocketMessage;
-
-            // Handle connection established
             if (message.type === "connection_established") {
               this.clientId = message.payload.clientId;
             }
-
-            // Handle server-side errors (Preserves clean server messages)
             if (message.type === "error") {
               handleAppError(
                 new Error(message.payload.message || "Server error"),
                 "SEND_MESSAGE",
               );
             }
-
-            // Call registered handlers
             const handlers = this.messageHandlers.get(message.type);
-            handlers?.forEach((handler) => {
-              try {
-                handler(message);
-              } catch (e) {
-                console.error("Handler error", e);
-              }
-            });
+            handlers?.forEach((h) => h(message));
           } catch (error) {
             console.error("[WebSocket Client] Parse error", error);
           }
@@ -87,19 +73,13 @@ export class WebSocketClient {
 
         this.ws.onerror = (error) => {
           this.setConnectionState("error");
-
-          // FIREWALL: Replaces technical Event object with a clean string for the toast
           handleAppError("WS_CONNECTION_FAILED", "NETWORK");
-
           reject(error);
         };
 
         this.ws.onclose = (event) => {
           this.setConnectionState("disconnected");
-          // Reconnect only if not a manual disconnect
-          if (event.code !== 1000) {
-            this.attemptReconnect();
-          }
+          if (event.code !== 1000) this.attemptReconnect();
         };
       } catch (error) {
         this.setConnectionState("error");
@@ -114,52 +94,25 @@ export class WebSocketClient {
       handleAppError("RECONNECT_LIMIT_REACHED", "NETWORK");
       return;
     }
-
     this.reconnectAttempts++;
     const delay = Math.min(
       this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1),
       MAX_RECONNECT_DELAY,
     );
-
-    this.reconnectTimeout = setTimeout(() => {
-      this.connect().catch(() => {});
-    }, delay);
+    this.reconnectTimeout = setTimeout(
+      () => this.connect().catch(() => {}),
+      delay,
+    );
   }
 
   disconnect(): void {
-    if (this.reconnectTimeout) {
-      clearTimeout(this.reconnectTimeout);
-      this.reconnectTimeout = null;
-    }
-
+    if (this.reconnectTimeout) clearTimeout(this.reconnectTimeout);
     if (this.ws) {
       this.ws.onclose = null;
       this.ws.close();
       this.ws = null;
     }
-
     this.setConnectionState("disconnected");
-  }
-
-  send(message: WebSocketMessage): void {
-    if (this.ws?.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify(message));
-    }
-  }
-
-  onMessage(
-    type: WebSocketServerEventType,
-    handler: (msg: WebSocketMessage) => void,
-  ) {
-    if (!this.messageHandlers.has(type))
-      this.messageHandlers.set(type, new Set());
-    this.messageHandlers.get(type)?.add(handler);
-    return () => this.messageHandlers.get(type)?.delete(handler);
-  }
-
-  onConnectionStateChange(handler: (state: ConnectionState) => void) {
-    this.connectionStateHandlers.add(handler);
-    return () => this.connectionStateHandlers.delete(handler);
   }
 
   private setConnectionState(state: ConnectionState): void {
@@ -169,38 +122,13 @@ export class WebSocketClient {
     }
   }
 
-  isConnected = () =>
-    this.connectionState === "connected" &&
-    this.ws?.readyState === WebSocket.OPEN;
-
-  // --- Domain Methods ---
-
-  authenticate(
-    userId: string,
-    walletAddress: string,
-    displayName: string,
-    avatarUrl?: string,
-  ) {
-    this.walletAddress = walletAddress;
-    this.send({
-      type: "auth",
-      payload: { userId, walletAddress, displayName, avatarUrl },
-      timestamp: Date.now(),
-    });
+  send(message: WebSocketMessage): void {
+    if (this.ws?.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify(message));
+    }
   }
 
-  joinRoom = (roomId: string) =>
-    this.send({
-      type: "room_join",
-      payload: { roomId },
-      timestamp: Date.now(),
-    });
-  leaveRoom = (roomId: string) =>
-    this.send({
-      type: "leave_room",
-      payload: { roomId },
-      timestamp: Date.now(),
-    });
+  // --- Domain Methods ---
 
   sendMessage(
     roomId: string,
@@ -211,13 +139,10 @@ export class WebSocketClient {
       return { success: false };
     }
 
-    // Rate Limit Check
-    const rateLimitCheck = rateLimiter.check(this.walletAddress);
-    if (!rateLimitCheck.allowed) {
-      const seconds = Math.ceil((rateLimitCheck.remainingMs || 0) / 1000);
-      const limitMsg = `Please wait ${seconds} second${seconds !== 1 ? "s" : ""} before sending another message.`;
-
-      // Passes the specific countdown message to the firewall
+    const rateLimit = rateLimiter.check(this.walletAddress);
+    if (!rateLimit.allowed) {
+      const seconds = Math.ceil((rateLimit.remainingMs || 0) / 1000);
+      const limitMsg = `Please wait ${seconds}s before sending another message.`;
       handleAppError(limitMsg, "SEND_MESSAGE");
       return { success: false, error: limitMsg };
     }
@@ -235,6 +160,62 @@ export class WebSocketClient {
     return { success: true };
   }
 
+  /**
+   * FIX FOR JOB 72843331390:
+   * Explicitly defining the missing method called in hooks.ts
+   */
+  notifyWalletEvent(action: "connect" | "disconnect", walletAddress: string) {
+    this.send({
+      type: "wallet_event",
+      payload: { action, walletAddress },
+      timestamp: Date.now(),
+    });
+  }
+
+  authenticate(
+    userId: string,
+    walletAddress: string,
+    displayName: string,
+    avatarUrl?: string,
+  ) {
+    this.walletAddress = walletAddress;
+    this.send({
+      type: "auth",
+      payload: { userId, walletAddress, displayName, avatarUrl },
+      timestamp: Date.now(),
+    });
+  }
+
+  onMessage(
+    type: WebSocketServerEventType,
+    handler: (msg: WebSocketMessage) => void,
+  ) {
+    if (!this.messageHandlers.has(type))
+      this.messageHandlers.set(type, new Set());
+    this.messageHandlers.get(type)?.add(handler);
+    return () => this.messageHandlers.get(type)?.delete(handler);
+  }
+
+  onConnectionStateChange = (h: (s: ConnectionState) => void) => {
+    this.connectionStateHandlers.add(h);
+    return () => this.connectionStateHandlers.delete(h);
+  };
+
+  isConnected = () =>
+    this.connectionState === "connected" &&
+    this.ws?.readyState === WebSocket.OPEN;
+  joinRoom = (roomId: string) =>
+    this.send({
+      type: "room_join",
+      payload: { roomId },
+      timestamp: Date.now(),
+    });
+  leaveRoom = (roomId: string) =>
+    this.send({
+      type: "leave_room",
+      payload: { roomId },
+      timestamp: Date.now(),
+    });
   notifyTyping = (roomId: string) =>
     this.send({ type: "typing", payload: { roomId }, timestamp: Date.now() });
   notifyStopTyping = (roomId: string) =>
@@ -246,7 +227,6 @@ export class WebSocketClient {
 }
 
 let instance: WebSocketClient | null = null;
-
 export function getWebSocketClient(url?: string): WebSocketClient {
   if (!instance) {
     const wsUrl =
