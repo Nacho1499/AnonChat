@@ -2,7 +2,7 @@
 
 ## 📝 Description
 
-**Fork the repository and create a new branch using the issue number**
+**Provide a short and clear description of what this PR does**
 
 - What does this PR do?
 - Why is this change necessary?
