@@ -168,5 +168,12 @@ export function useWebSocketSend() {
       },
       [],
     ),
+    /**
+     * FIX FOR JOB 72926850335:
+     * Add missing method to acknowledge message delivery
+     */
+    markAsDelivered: useCallback((messageId: string, roomId: string) => {
+      client.current.markAsDelivered(messageId, roomId);
+    }, []),
   };
 }

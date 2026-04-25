@@ -224,6 +224,17 @@ export class WebSocketClient {
       payload: { roomId },
       timestamp: Date.now(),
     });
+
+  /**
+   * FIX FOR JOB 72926850335:
+   * Add missing method to acknowledge message delivery
+   */
+  markAsDelivered = (messageId: string, roomId: string) =>
+    this.send({
+      type: "message_delivered",
+      payload: { messageId, roomId },
+      timestamp: Date.now(),
+    });
 }
 
 let instance: WebSocketClient | null = null;
